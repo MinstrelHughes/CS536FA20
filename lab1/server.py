@@ -4,7 +4,6 @@ import sys
 def main(argv):
     HOST = "127.0.0.1"
     # specify host, port, data amount, etc.
-    print(argv)
     if len(argv)!=1:
         print("Invalid arguments. Run on default port 3000")
         PORT = 3000  
