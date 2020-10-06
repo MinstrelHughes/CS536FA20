@@ -11,7 +11,7 @@ def main(argv):
         PORT = int(argv[0])
     DATA_LEN = 2048
     CODE = "utf-8" 
-    WELCOME_MSG = b"Welcome" 
+    WELCOME_MSG = b"Welcome!" 
 
     # threading to handle a client function
     def tcplink(sock, address):
