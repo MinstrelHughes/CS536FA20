@@ -1,0 +1,40 @@
+sum of four rows on column: 0
+10.2935
+sum of four rows on column: 1
+5.90829
+sum of four rows on column: 2
+4.20602
+sum of four rows on column: 3
+9.34066
+length of row: 0
+4.10295
+length of row: 1
+4.77056
+length of row: 2
+4.3216
+length of row: 3
+3.71011
+dotproduct of row 0 and row 1: 
+10.9292
+angle(cos) between row 0 and row 1: 
+0.558369
+dotproduct of row 0 and row 2: 
+15.3838
+angle(cos) between row 0 and row 2: 
+0.867605
+dotproduct of row 0 and row 3: 
+12.2027
+angle(cos) between row 0 and row 3: 
+0.801629
+dotproduct of row 1 and row 2: 
+14.7181
+angle(cos) between row 1 and row 2: 
+0.713901
+dotproduct of row 1 and row 3: 
+13.5036
+angle(cos) between row 1 and row 3: 
+0.762948
+dotproduct of row 2 and row 3: 
+14.2948
+angle(cos) between row 2 and row 3: 
+0.891553

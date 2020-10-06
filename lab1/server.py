@@ -2,7 +2,7 @@ import socket
 import threading
 import sys
 def main(argv):
-    HOST = "127.0.0.1"
+    HOST = socket.gethostname()
     # specify host, port, data amount, etc.
     if len(argv)!=1:
         print("Invalid arguments. Run on default port 3000")

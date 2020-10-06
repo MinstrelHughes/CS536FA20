@@ -1,14 +1,25 @@
 import socket
 import sys
 # specify host, port, data amount and code style
+
+def get_host_ip(host_name): 
+    try: 
+        host_ip = socket.gethostbyname(host_name) 
+        return host_ip
+    except: 
+        print("Unable to get Hostname and IP") 
+
 def main(argv):
 	if len(argv)==2:
-		HOST = argv[0]
+		HOST = get_host_ip(argv[0])
 		PORT = int(argv[1])
+		print(HOST,PORT)
+
 	else:
 		print("Invalid arguments. Run on default.")
 		HOST = '127.0.0.1'  
 		PORT = 3000  
+
 
 	DATA_LEN = 2048
 	CODE = "utf-8" 
