@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define NODE_NUM 1
 
 extern struct rtpkt {
   int sourceid;       /* id of sending router sending this pkt */
@@ -21,11 +22,41 @@ struct distance_table
 
 
 /* students to write the following two routines, and maybe some others */
+void send2neighbour1(){
+  struct rtpkt tempPkt[2];
+  int distanceVector[4];
+  int neighboursIndex[2] = {0,2};
+  for(int i=0;i<4;i++){
+    distanceVector[i] = dt1.costs[i][NODE_NUM];
+  }
+// send to 1's neighbours 
+  for(int i=0;i<2;i++){
+    creatertpkt(&tempPkt[i],NODE_NUM,neighboursIndex[i],distanceVector);
+    tolayer2(tempPkt[i]);
+  } 
 
+  printf("%s\n", "send to neighbour from node 1");
+
+}
 
 rtinit1() 
 {
 
+  for(int i=0;i<4;i++){
+    for(int j=0;j<4;j++){
+      dt1.costs[i][j] = 999;
+    }
+  }
+
+  for(int i=0;i<4;i++){
+    dt1.costs[i][NODE_NUM] = connectcosts1[i];
+  }
+
+  printf("%s\n", "init 1 was called");
+
+  printdt1(&dt1);
+  send2neighbour1();
+  
 }
 
 
@@ -33,6 +64,42 @@ rtupdate1(rcvdpkt)
   struct rtpkt *rcvdpkt;
   
 {
+
+    int updatedFlag = 0;
+
+  int sourceid = rcvdpkt->sourceid;
+  for(int i=0;i<4;i++){
+    dt1.costs[i][sourceid] = rcvdpkt->mincost[i];
+  }
+
+  for(int i=0;i<4;i++){
+    if(i!=NODE_NUM){
+      int tempCost = 999;
+
+      for(int j=0;j<4;j++){
+        if(j!=NODE_NUM && tempCost>connectcosts1[j]+dt1.costs[i][j]){
+
+          tempCost = connectcosts1[j]+dt1.costs[i][j];
+
+        }
+
+      }
+      if(tempCost!=dt1.costs[i][NODE_NUM]){
+        updatedFlag = 1;
+      }
+
+      dt1.costs[i][NODE_NUM] = tempCost;
+    }
+  }
+
+
+  if(updatedFlag==1){
+      send2neighbour1();
+      printdt1(&dt1);
+
+  }else{
+    printf("%s\n", "node 2: not updated");
+  }
 
 }
 
@@ -60,6 +127,37 @@ int linkid, newcost;
 /* constant definition in prog3.c from 0 to 1 */
 	
 {
+
+    connectcosts1[linkid] = newcost;
+
+  int updatedFlag = 0;
+
+  for(int i=0;i<4;i++){
+    if(i!=NODE_NUM){
+      int tempCost = 999;
+
+      for(int j=0;j<4;j++){
+        if(j!=NODE_NUM && tempCost>connectcosts1[j]+dt1.costs[i][j]){
+          updatedFlag = 1;
+          tempCost = connectcosts1[j]+dt1.costs[i][j];
+        }
+      }
+
+      if(tempCost!=dt1.costs[i][NODE_NUM]){
+        updatedFlag = 1;
+      }
+
+      dt1.costs[i][NODE_NUM] = tempCost;
+
+    }
+  }
+
+    // printf("update dt0");
+  if(updatedFlag==1){
+      printdt1(&dt1);
+
+      send2neighbour1();
+  }
 }
 
 

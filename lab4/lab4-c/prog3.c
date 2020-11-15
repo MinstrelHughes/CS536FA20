@@ -1,11 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-// #include "node0.c"
-// #include <node1.c>
-// #include <node2.c>
-// #include <node3.c>
-
 #define LINKCHANGES 1 
 /* ******************************************************************
 Programming assignment 3: implementing distributed, asynchronous,
@@ -25,7 +19,7 @@ struct rtpkt {
   int mincost[4];    /* min cost to node 0 ... 3 */
   };
 
-int TRACE = 1;             /* for my debugging */
+int TRACE = 10;             /* for my debugging */
 int YES = 1;
 int NO = 0;
 
@@ -94,7 +88,7 @@ main()
           printf("MAIN: rcv event, t=%.3f, at %d",
                           eventptr->evtime,eventptr->eventity);
           if (eventptr->evtype == FROM_LAYER2 ) {
-	    printf(" src:%2d,",eventptr->rtpktptr->sourceid);
+      printf(" src:%2d,",eventptr->rtpktptr->sourceid);
             printf(" dest:%2d,",eventptr->rtpktptr->destid);
             printf(" contents: %3d %3d %3d %3d\n", 
               eventptr->rtpktptr->mincost[0], eventptr->rtpktptr->mincost[1],
@@ -104,25 +98,25 @@ main()
         clocktime = eventptr->evtime;    /* update time to next event time */
         if (eventptr->evtype == FROM_LAYER2 ) {
             if (eventptr->eventity == 0) 
-	      rtupdate0(eventptr->rtpktptr);
-	     else if (eventptr->eventity == 1) 
-	      rtupdate1(eventptr->rtpktptr);
-	     else if (eventptr->eventity == 2) 
-	      rtupdate2(eventptr->rtpktptr);
-	     else if (eventptr->eventity == 3) 
-	      rtupdate3(eventptr->rtpktptr);
+        rtupdate0(eventptr->rtpktptr);
+       else if (eventptr->eventity == 1) 
+        rtupdate1(eventptr->rtpktptr);
+       else if (eventptr->eventity == 2) 
+        rtupdate2(eventptr->rtpktptr);
+       else if (eventptr->eventity == 3) 
+        rtupdate3(eventptr->rtpktptr);
              else { printf("Panic: unknown event entity\n"); exit(0); }
-	  }
+    }
         else if (eventptr->evtype == LINK_CHANGE ) {
             if (clocktime<10001.0) {
-	      linkhandler0(1,20);
-	      linkhandler1(0,20);
+        linkhandler0(1,20);
+        linkhandler1(0,20);
               }
-	    else   {
-    	      linkhandler0(1,1);
-	      linkhandler1(0,1);
+      else   {
+            linkhandler0(1,1);
+        linkhandler1(0,1);
               }
-	  }
+    }
           else
              { printf("Panic: unknown event type\n"); exit(0); }
         if (eventptr->evtype == FROM_LAYER2 ) 
@@ -133,45 +127,6 @@ main()
 
 terminate:
    printf("\nSimulator terminated at t=%f, no packets in medium\n", clocktime);
-}
-
-
-insertevent(p)
-   struct event *p;
-{
-   struct event *q,*qold;
-
-   if (TRACE>3) {
-      printf("            INSERTEVENT: time is %lf\n",clocktime);
-      printf("            INSERTEVENT: future time will be %lf\n",p->evtime); 
-      }
-   q = evlist;     /* q points to header of list in which p struct inserted */
-   if (q==NULL) {   /* list is empty */
-        evlist=p;
-        p->next=NULL;
-        p->prev=NULL;
-        }
-     else {
-        for (qold = q; q !=NULL && p->evtime > q->evtime; q=q->next)
-              qold=q; 
-        if (q==NULL) {   /* end of list */
-             qold->next = p;
-             p->prev = qold;
-             p->next = NULL;
-             }
-           else if (q==evlist) { /* front of list */
-             p->next=evlist;
-             p->prev=NULL;
-             p->next->prev=p;
-             evlist = p;
-             }
-           else {     /* middle of list */
-             p->next=q;
-             p->prev=q->prev;
-             q->prev->next=p;
-             q->prev=p;
-             }
-         }
 }
 
 
@@ -239,7 +194,43 @@ float jimsrand()
 /*****************************************************/
  
 
+insertevent(p)
+   struct event *p;
+{
+   struct event *q,*qold;
 
+   if (TRACE>3) {
+      printf("            INSERTEVENT: time is %lf\n",clocktime);
+      printf("            INSERTEVENT: future time will be %lf\n",p->evtime); 
+      }
+   q = evlist;     /* q points to header of list in which p struct inserted */
+   if (q==NULL) {   /* list is empty */
+        evlist=p;
+        p->next=NULL;
+        p->prev=NULL;
+        }
+     else {
+        for (qold = q; q !=NULL && p->evtime > q->evtime; q=q->next)
+              qold=q; 
+        if (q==NULL) {   /* end of list */
+             qold->next = p;
+             p->prev = qold;
+             p->next = NULL;
+             }
+           else if (q==evlist) { /* front of list */
+             p->next=evlist;
+             p->prev=NULL;
+             p->next->prev=p;
+             evlist = p;
+             }
+           else {     /* middle of list */
+             p->next=q;
+             p->prev=q->prev;
+             q->prev->next=p;
+             q->prev=p;
+             }
+         }
+}
 
 printevlist()
 {

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define NODE_NUM 2
 
 extern struct rtpkt {
   int sourceid;       /* id of sending router sending this pkt */
@@ -10,6 +11,7 @@ extern struct rtpkt {
 extern int TRACE;
 extern int YES;
 extern int NO;
+int connectcosts2[4] = {3,1,0,4};
 
 struct distance_table 
 {
@@ -19,8 +21,41 @@ struct distance_table
 
 /* students to write the following two routines, and maybe some others */
 
+void send2neighbour2(){
+  struct rtpkt tempPkt[3];
+  int distanceVector[4];
+  int neighboursIndex[3] = {0,1,3};
+  for(int i=0;i<4;i++){
+    distanceVector[i] = dt2.costs[i][NODE_NUM];
+  }
+// send to 2's neighbours 
+  for(int i=0;i<3;i++){
+    creatertpkt(&tempPkt[i],NODE_NUM,neighboursIndex[i],distanceVector);
+    tolayer2(tempPkt[i]);
+  }
+  
+  printf("%s\n", "send to neighbour from node 2");
+
+}
+
 void rtinit2() 
 {
+
+  for(int i=0;i<4;i++){
+    for(int j=0;j<4;j++){
+      dt2.costs[i][j] = 999;
+    }
+  }
+
+  for(int i=0;i<4;i++){
+    dt2.costs[i][NODE_NUM] = connectcosts2[i];
+  }
+
+    printf("%s\n", "init 2 was called");
+
+  printdt2(&dt2);
+  send2neighbour2();
+
 }
 
 
@@ -29,6 +64,36 @@ void rtupdate2(rcvdpkt)
   
 {
 
+  printf("%s\n","update dt2 called");
+  int updatedFlag = 0;
+
+  int sourceid = rcvdpkt->sourceid;
+  for(int i=0;i<4;i++){
+    dt2.costs[i][sourceid] = rcvdpkt->mincost[i];
+  }
+
+  for(int i=0;i<4;i++){
+    if(i!=NODE_NUM){
+      int tempCost = 999;
+
+      for(int j=0;j<4;j++){
+        if(j!=NODE_NUM && tempCost>connectcosts2[j]+dt2.costs[i][j]){
+
+          tempCost = connectcosts2[j]+dt2.costs[i][j];
+        }
+      }
+      if(tempCost!=dt2.costs[i][NODE_NUM]){
+        updatedFlag = 1;
+      }
+
+      dt2.costs[i][NODE_NUM] = tempCost;
+    }
+  }
+  if(updatedFlag==1){
+        printdt2(&dt2);
+
+      send2neighbour2();
+  }
 }
 
 
